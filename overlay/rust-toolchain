@@ -1,0 +1,5 @@
+# Visual studio code, this is not a python file :3
+[toolchain]
+channel = "stable"
+components = []
+targets = ["wasm32-unknown-unknown"]
