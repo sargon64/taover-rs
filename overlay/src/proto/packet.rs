@@ -15,7 +15,7 @@ use quick_protobuf::sizeofs::*;
 use super::super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Command<'a> {
     pub type_pb: proto::packet::mod_Command::OneOftype_pb<'a>,
 }
@@ -76,7 +76,7 @@ use std::borrow::Cow;
 use super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct LoadSong<'a> {
     pub level_id: Cow<'a, str>,
@@ -113,7 +113,7 @@ impl<'a> MessageWrite for LoadSong<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct PlaySong<'a> {
     pub gameplay_parameters: Option<proto::models::GameplayParameters<'a>>,
@@ -170,7 +170,7 @@ impl<'a> MessageWrite for PlaySong<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct SendBotMessage<'a> {
     pub channel: Option<proto::discord::Channel<'a>>,
@@ -207,7 +207,7 @@ impl<'a> MessageWrite for SendBotMessage<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct ShowModal<'a> {
     pub modal_id: Cow<'a, str>,
@@ -259,7 +259,7 @@ impl<'a> MessageWrite for ShowModal<'a> {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub enum OneOftype_pb<'a> {
     heartbeat(bool),
     return_to_menu(bool),
@@ -281,7 +281,7 @@ impl<'a> Default for OneOftype_pb<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Push<'a> {
     pub data: proto::packet::mod_Push::OneOfdata<'a>,
@@ -328,7 +328,7 @@ use std::borrow::Cow;
 use super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct LeaderboardScore<'a> {
     pub score: Option<proto::models::LeaderboardScore<'a>>,
@@ -361,7 +361,7 @@ impl<'a> MessageWrite for LeaderboardScore<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct RealtimeScore<'a> {
     pub user_guid: Cow<'a, str>,
@@ -430,7 +430,7 @@ impl<'a> MessageWrite for RealtimeScore<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct SongFinished<'a> {
     pub player: Option<proto::models::User<'a>>,
@@ -477,7 +477,7 @@ impl<'a> MessageWrite for SongFinished<'a> {
 pub mod mod_SongFinished {
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]pub enum CompletionType {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]pub enum CompletionType {
     Passed = 0,
     Failed = 1,
     Quit = 2,
@@ -513,7 +513,7 @@ impl<'a> From<&'a str> for CompletionType {
 
 }
 
-#[derive(Debug, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub enum OneOfdata<'a> {
     leaderboard_score(proto::packet::mod_Push::LeaderboardScore<'a>),
     realtime_score(proto::packet::mod_Push::RealtimeScore<'a>),
@@ -530,7 +530,7 @@ impl<'a> Default for OneOfdata<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Request<'a> {
     pub type_pb: proto::packet::mod_Request::OneOftype_pb<'a>,
@@ -577,7 +577,7 @@ use std::borrow::Cow;
 use super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Connect<'a> {
     pub user: Option<proto::models::User<'a>>,
@@ -618,7 +618,7 @@ impl<'a> MessageWrite for Connect<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct LeaderboardScore<'a> {
     pub event_id: Cow<'a, str>,
@@ -655,7 +655,7 @@ impl<'a> MessageWrite for LeaderboardScore<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct PreloadImageForStreamSync<'a> {
     pub file_id: Cow<'a, str>,
@@ -695,7 +695,7 @@ impl<'a> MessageWrite for PreloadImageForStreamSync<'a> {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub enum OneOftype_pb<'a> {
     connect(proto::packet::mod_Request::Connect<'a>),
     leaderboard_score(proto::packet::mod_Request::LeaderboardScore<'a>),
@@ -712,7 +712,7 @@ impl<'a> Default for OneOftype_pb<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Response<'a> {
     pub type_pb: proto::packet::mod_Response::ResponseType,
@@ -776,7 +776,7 @@ use std::borrow::Cow;
 use super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Connect<'a> {
     pub state: Option<proto::models::State<'a>>,
@@ -825,7 +825,7 @@ impl<'a> MessageWrite for Connect<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct LeaderboardScores<'a> {
     pub scores: Vec<proto::models::LeaderboardScore<'a>>,
@@ -858,7 +858,7 @@ impl<'a> MessageWrite for LeaderboardScores<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct LoadedSong<'a> {
     pub level: Option<proto::models::PreviewBeatmapLevel<'a>>,
@@ -891,7 +891,7 @@ impl<'a> MessageWrite for LoadedSong<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Modal<'a> {
     pub modal_id: Cow<'a, str>,
@@ -928,7 +928,7 @@ impl<'a> MessageWrite for Modal<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct ModifyQualifier<'a> {
     pub message: Cow<'a, str>,
@@ -961,7 +961,7 @@ impl<'a> MessageWrite for ModifyQualifier<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct ImagePreloaded<'a> {
     pub file_id: Cow<'a, str>,
@@ -993,7 +993,7 @@ impl<'a> MessageWrite for ImagePreloaded<'a> {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]pub enum ResponseType {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]pub enum ResponseType {
     Fail = 0,
     Success = 1,
 }
@@ -1024,7 +1024,7 @@ impl<'a> From<&'a str> for ResponseType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]pub enum ConnectFailReason {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]pub enum ConnectFailReason {
     IncorrectVersion = 0,
     IncorrectPassword = 1,
 }
@@ -1055,7 +1055,7 @@ impl<'a> From<&'a str> for ConnectFailReason {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub enum OneOfdetails<'a> {
     connect(proto::packet::mod_Response::Connect<'a>),
     leaderboard_scores(proto::packet::mod_Response::LeaderboardScores<'a>),
@@ -1075,7 +1075,7 @@ impl<'a> Default for OneOfdetails<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Acknowledgement<'a> {
     pub packet_id: Cow<'a, str>,
@@ -1114,7 +1114,7 @@ impl<'a> MessageWrite for Acknowledgement<'a> {
 pub mod mod_Acknowledgement {
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]
 pub enum AcknowledgementType {
     MessageReceived = 0,
 }
@@ -1146,7 +1146,7 @@ impl<'a> From<&'a str> for AcknowledgementType {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct ForwardingPacket<'a> {
     pub forward_to: Vec<Cow<'a, str>>,
@@ -1183,7 +1183,7 @@ impl<'a> MessageWrite for ForwardingPacket<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Event<'a> {
     pub changed_object: proto::packet::mod_Event::OneOfchanged_object<'a>,
@@ -1253,7 +1253,7 @@ pub mod mod_Event {
 use super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct UserAddedEvent<'a> {
     pub user: Option<proto::models::User<'a>>,
@@ -1286,7 +1286,7 @@ impl<'a> MessageWrite for UserAddedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct UserUpdatedEvent<'a> {
     pub user: Option<proto::models::User<'a>>,
@@ -1319,7 +1319,7 @@ impl<'a> MessageWrite for UserUpdatedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct UserLeftEvent<'a> {
     pub user: Option<proto::models::User<'a>>,
@@ -1352,7 +1352,7 @@ impl<'a> MessageWrite for UserLeftEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct MatchCreatedEvent<'a> {
     pub match_pb: Option<proto::models::Match<'a>>,
@@ -1385,7 +1385,7 @@ impl<'a> MessageWrite for MatchCreatedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct MatchUpdatedEvent<'a> {
     pub match_pb: Option<proto::models::Match<'a>>,
@@ -1418,7 +1418,7 @@ impl<'a> MessageWrite for MatchUpdatedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct MatchDeletedEvent<'a> {
     pub match_pb: Option<proto::models::Match<'a>>,
@@ -1451,7 +1451,7 @@ impl<'a> MessageWrite for MatchDeletedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct QualifierCreatedEvent<'a> {
     pub event: Option<proto::models::QualifierEvent<'a>>,
@@ -1484,7 +1484,7 @@ impl<'a> MessageWrite for QualifierCreatedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct QualifierUpdatedEvent<'a> {
     pub event: Option<proto::models::QualifierEvent<'a>>,
@@ -1517,7 +1517,7 @@ impl<'a> MessageWrite for QualifierUpdatedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct QualifierDeletedEvent<'a> {
     pub event: Option<proto::models::QualifierEvent<'a>>,
@@ -1550,7 +1550,7 @@ impl<'a> MessageWrite for QualifierDeletedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct HostAddedEvent<'a> {
     pub server: Option<proto::models::CoreServer<'a>>,
@@ -1583,7 +1583,7 @@ impl<'a> MessageWrite for HostAddedEvent<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct HostDeletedEvent<'a> {
     pub server: Option<proto::models::CoreServer<'a>>,
@@ -1615,7 +1615,7 @@ impl<'a> MessageWrite for HostDeletedEvent<'a> {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub enum OneOfchanged_object<'a> {
     user_added_event(proto::packet::mod_Event::UserAddedEvent<'a>),
     user_updated_event(proto::packet::mod_Event::UserUpdatedEvent<'a>),
@@ -1640,8 +1640,7 @@ impl<'a> Default for OneOfchanged_object<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
-
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Packet<'a> {
     pub id: Cow<'a, str>,
     pub from: Cow<'a, str>,
@@ -1705,7 +1704,7 @@ pub mod mod_Packet {
 
 use super::*;
 
-#[derive(Debug, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub enum OneOfpacket<'a> {
     acknowledgement(proto::packet::Acknowledgement<'a>),
     forwarding_packet(Box<proto::packet::ForwardingPacket<'a>>),

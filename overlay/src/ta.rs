@@ -1,75 +1,174 @@
-use crate::console_log;
-
-use super::proto::packet::Packet;
+use std::sync::atomic::Ordering;
 
 use js_sys::Uint8Array;
+use lazy_static::lazy_static;
 use quick_protobuf::{BytesReader, MessageRead};
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::*, JsCast};
-use web_sys::{WebSocket, MessageEvent, FileReader, ProgressEvent, console};
-// use ws::{Factory, Handler, Sender, WebSocket};
+use web_sys::{console, FileReader, MessageEvent, ProgressEvent, WebSocket};
+use yew::{html, Callback, Component, Context, Html};
 
-// pub struct TaConnection {
-//     pub ta_uri: String,
-//     pub ws: WebSocket<TaFactory>,
+use anyhow::Error;
+use ipc_channel::ipc;
+use yew_websocket::macros::Json;
+use yew_websocket::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
+
+use crate::console_log;
+use crate::proto::packet::Packet;
+use crate::SENT_PACKET_COUNT;
+
+// pub fn start_ta(ta_uri: &str) -> Result<(), JsValue> {
+//     let ws = WebSocket::new(ta_uri)?;
+//     let on_message = Closure::<dyn FnMut(_)>::new(move |e: MessageEvent| {
+//         let blob = e.data().dyn_into::<web_sys::Blob>().unwrap();
+//         let fr = FileReader::new().unwrap();
+//         let fr_c = fr.clone();
+//
+//         let onloadend = Closure::<dyn FnMut(_)>::new(move |_e: ProgressEvent| {
+//             let arr = Uint8Array::new(&fr_c.result().unwrap()).to_vec();
+//             let mut reader = BytesReader::from_bytes(&arr);
+//             let decoded = Packet::from_reader(&mut reader, &arr);
+//             SENT_PACKET_COUNT.fetch_add(1, Ordering::SeqCst);
+//             console_log!("{:?}", SENT_PACKET_COUNT.load(Ordering::SeqCst));
+//         });
+//         fr.set_onloadend(Some(onloadend.as_ref().unchecked_ref()));
+//         fr.read_as_array_buffer(&blob).expect("blob not readable");
+//         onloadend.forget();
+//     });
+//     ws.set_onmessage(Some(on_message.as_ref().unchecked_ref()));
+//     on_message.forget();
+//     Ok(())
 // }
 
-// pub struct TaHandler {
-//     pub ws: Sender,
-//     pub is_client: bool,
-// }
+type AsBinary = bool;
 
-// impl Handler for TaHandler {
-//     fn on_message(&mut self, msg: ws::Message) -> ws::Result<()> {
-//         let b = msg.into_data();
-//         //println!("{:x?}", &b);
-//         let mut reader = BytesReader::from_bytes(&b);
-//         let decoded = Packet::from_reader(&mut reader, &b);
-//         println!("{:?}", serde_json::to_string(&decoded.unwrap()));
-//         ws::Result::Ok(())
-//     }
-// }
+pub enum Format {
+    Json,
+    Toml,
+}
 
-// pub struct TaFactory;
+pub enum WsAction {
+    Connect,
+    //SendData(AsBinary),
+    Disconnect,
+    Lost,
+}
 
-// impl Factory for TaFactory {
-//     type Handler = TaHandler;
+pub enum Msg {
+    WsAction(WsAction),
+    WsReady(Result<Vec<u8>, Error>),
+}
 
-//     fn connection_made(&mut self, ws: ws::Sender) -> Self::Handler {
-//         Self::Handler {
-//             ws,
-//             is_client: true,
-//         }
-//     }
-// }
+impl From<WsAction> for Msg {
+    fn from(action: WsAction) -> Self {
+        Msg::WsAction(action)
+    }
+}
 
-// impl TaConnection {
-//     pub fn new(ta_uri: &str) -> Self {
-//         let ws = WebSocket::new(TaFactory).unwrap();
-//         Self {
-//             ws,
-//             ta_uri: ta_uri.to_owned(),
-//         }
-//     }
-// }
+pub struct Model<'a> {
+    pub fetching: bool,
+    pub data: Option<Packet<'a>>,
+    pub ws: Option<WebSocketTask>,
+}
 
-pub fn start_ta(ta_uri: &str) -> Result<(), JsValue>{
-    let ws = WebSocket::new(ta_uri)?;
-    let on_message = Closure::<dyn FnMut(_)>::new(move |e: MessageEvent| {
-        let blob = e.data().dyn_into::<web_sys::Blob>().unwrap();
-        let fr = FileReader::new().unwrap();
-        let fr_c = fr.clone();
+impl Model<'_> {
+    fn view_data(&self) -> Html {
+        if let Some(value) = &self.data {
+            html! {
+                <p>{ format!("{:?}", value) }</p>
+            }
+        } else {
+            html! {
+                <p>{ "Data hasn't fetched yet." }</p>
+            }
+        }
+    }
+}
 
-        let onloadend = Closure::<dyn FnMut(_)>::new(move |_e: ProgressEvent| {
-            let arr = Uint8Array::new(&fr_c.result().unwrap()).to_vec();
-            let mut reader = BytesReader::from_bytes(&arr);
-            let decoded = Packet::from_reader(&mut reader, &arr);
-            console_log!("{:?}", decoded)
-        });
-        fr.set_onloadend(Some(onloadend.as_ref().unchecked_ref()));
-        fr.read_as_array_buffer(&blob).expect("blob not readable");
-        onloadend.forget();
-    });
-    ws.set_onmessage(Some(on_message.as_ref().unchecked_ref()));
-    on_message.forget();
-    Ok(())
+impl Component for Model {
+    type Message = Msg;
+    type Properties = ();
+
+    fn create(ctx: &Context<Self>) -> Self {
+        Self {
+            fetching: false,
+            data: None,
+            ws: None,
+        }
+    }
+
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg {
+            Msg::WsAction(action) => match action {
+                WsAction::Connect => {
+                    let callback = ctx.link().callback(|data| Msg::WsReady(data));
+                    let notification = ctx.link().batch_callback(|status| match status {
+                        WebSocketStatus::Opened => None,
+                        WebSocketStatus::Closed | WebSocketStatus::Error => {
+                            Some(WsAction::Lost.into())
+                        }
+                    });
+                    let task = WebSocketService::connect_binary(
+                        "ws://127.0.0.1:2053",
+                        callback,
+                        notification,
+                    )
+                    .unwrap();
+                    self.ws = Some(task);
+                    true
+                }
+                // WsAction::SendData(binary) => {
+                //     let request = WsRequest { value: 321 };
+                //     if binary {
+                //         self.ws.as_mut().unwrap().send_binary(Json(&request));
+                //     } else {
+                //         self.ws.as_mut().unwrap().send(Json(&request));
+                //     }
+                //     false
+                // }
+                WsAction::Disconnect => {
+                    self.ws.take();
+                    true
+                }
+                WsAction::Lost => {
+                    self.ws = None;
+                    true
+                }
+            },
+            Msg::WsReady(response) => {
+                //self.data = self.data.ok();
+                let arr = response.unwrap();
+                let mut reader = BytesReader::from_bytes(&arr);
+                let decoded = Packet::from_reader(&mut reader, &arr);
+                self.data = decoded.ok();
+                true
+            }
+        }
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        html! {
+            <div>
+                <nav class="menu">
+                    { self.view_data() }
+                    <button disabled={self.ws.is_some()}
+                            onclick={ctx.link().callback(|_| WsAction::Connect)}>
+                        { "Connect To WebSocket" }
+                    </button>
+                    // <button disabled={self.ws.is_none()}
+                    //         onclick={ctx.link().callback(|_| WsAction::SendData(false))}>
+                    //     { "Send To WebSocket" }
+                    // </button>
+                    // <button disabled={self.ws.is_none()}
+                    //         onclick={ctx.link().callback(|_| WsAction::SendData(true))}>
+                    //     { "Send To WebSocket [binary]" }
+                    // </button>
+                    <button disabled={self.ws.is_none()}
+                            onclick={ctx.link().callback(|_| WsAction::Disconnect)}>
+                        { "Close WebSocket connection" }
+                    </button>
+                </nav>
+            </div>
+        }
+    }
 }

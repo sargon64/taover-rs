@@ -15,7 +15,7 @@ use quick_protobuf::sizeofs::*;
 use super::super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Channel<'a> {
     pub id: u64,
@@ -52,7 +52,7 @@ impl<'a> MessageWrite for Channel<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct DiscordUser<'a> {
     pub id: u64,
@@ -89,7 +89,7 @@ impl<'a> MessageWrite for DiscordUser<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Guild<'a> {
     pub id: u64,

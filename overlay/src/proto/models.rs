@@ -15,7 +15,7 @@ use quick_protobuf::sizeofs::*;
 use super::super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Characteristic<'a> {
     pub serialized_name: Cow<'a, str>,
@@ -52,7 +52,7 @@ impl<'a> MessageWrite for Characteristic<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Beatmap<'a> {
     pub name: Cow<'a, str>,
@@ -97,7 +97,7 @@ impl<'a> MessageWrite for Beatmap<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct PreviewBeatmapLevel<'a> {
     pub level_id: Cow<'a, str>,
@@ -142,7 +142,7 @@ impl<'a> MessageWrite for PreviewBeatmapLevel<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct GameplayModifiers {
     pub options: proto::models::mod_GameplayModifiers::GameOptions,
 }
@@ -176,7 +176,7 @@ impl MessageWrite for GameplayModifiers {
 pub mod mod_GameplayModifiers {
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]
 pub enum GameOptions {
     None_pb = 0,
     NoFail = 1,
@@ -265,7 +265,7 @@ impl<'a> From<&'a str> for GameOptions {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct PlayerSpecificSettings {
     pub player_height: f32,
@@ -324,7 +324,7 @@ impl MessageWrite for PlayerSpecificSettings {
 pub mod mod_PlayerSpecificSettings {
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]pub enum PlayerOptions {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]pub enum PlayerOptions {
     None_pb = 0,
     LeftHanded = 1,
     StaticLights = 2,
@@ -382,7 +382,7 @@ impl<'a> From<&'a str> for PlayerOptions {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]pub enum NoteJumpDurationTypeSettings {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]pub enum NoteJumpDurationTypeSettings {
     Dynamic = 0,
     Static = 1,
 }
@@ -416,7 +416,7 @@ impl<'a> From<&'a str> for NoteJumpDurationTypeSettings {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct GameplayParameters<'a> {
     pub beatmap: Option<proto::models::Beatmap<'a>>,
@@ -457,7 +457,7 @@ impl<'a> MessageWrite for GameplayParameters<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Team<'a> {
     pub id: Cow<'a, str>,
@@ -494,7 +494,7 @@ impl<'a> MessageWrite for Team<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct ServerSettings<'a> {
     pub server_name: Cow<'a, str>,
@@ -547,7 +547,7 @@ impl<'a> MessageWrite for ServerSettings<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct SongList<'a> {
     pub levels: Vec<proto::models::PreviewBeatmapLevel<'a>>,
@@ -580,7 +580,7 @@ impl<'a> MessageWrite for SongList<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct User<'a> {
     pub guid: Cow<'a, str>,
@@ -657,7 +657,7 @@ pub mod mod_User {
 use super::*;
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Point {
     pub x: i32,
@@ -693,7 +693,7 @@ impl MessageWrite for Point {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]pub enum PlayStates {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]pub enum PlayStates {
     Waiting = 0,
     InGame = 1,
 }
@@ -724,7 +724,7 @@ impl<'a> From<&'a str> for PlayStates {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]pub enum DownloadStates {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]pub enum DownloadStates {
     None_pb = 0,
     Downloading = 1,
     Downloaded = 2,
@@ -761,7 +761,7 @@ impl<'a> From<&'a str> for DownloadStates {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]
 pub enum ClientTypes {
     Player = 0,
     Coordinator = 1,
@@ -802,7 +802,7 @@ impl<'a> From<&'a str> for ClientTypes {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct Match<'a> {
     pub guid: Cow<'a, str>,
@@ -859,7 +859,7 @@ impl<'a> MessageWrite for Match<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct QualifierEvent<'a> {
     pub guid: Cow<'a, str>,
@@ -918,7 +918,7 @@ impl<'a> MessageWrite for QualifierEvent<'a> {
 pub mod mod_QualifierEvent {
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize)]pub enum EventSettings {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, serde::Serialize, serde::Deserialize)]pub enum EventSettings {
     None_pb = 0,
     HideScoresFromPlayers = 1,
     DisableScoresaberSubmission = 2,
@@ -958,7 +958,7 @@ impl<'a> From<&'a str> for EventSettings {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct CoreServer<'a> {
     pub name: Cow<'a, str>,
@@ -999,7 +999,7 @@ impl<'a> MessageWrite for CoreServer<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct State<'a> {
     pub server_settings: Option<proto::models::ServerSettings<'a>>,
@@ -1048,7 +1048,7 @@ impl<'a> MessageWrite for State<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct LeaderboardScore<'a> {
     pub event_id: Cow<'a, str>,
@@ -1105,7 +1105,7 @@ impl<'a> MessageWrite for LeaderboardScore<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct ModalOption<'a> {
     pub label: Cow<'a, str>,
@@ -1142,7 +1142,7 @@ impl<'a> MessageWrite for ModalOption<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct ScoreTrackerHand<'a> {
     pub hit: i32,
@@ -1187,7 +1187,7 @@ impl<'a> MessageWrite for ScoreTrackerHand<'a> {
 }
 
 #[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Debug, Default, PartialEq, Clone, serde::Serialize)]
+#[derive(Debug, Default, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 
 pub struct ScoreTracker<'a> {
     pub notesMissed: i32,

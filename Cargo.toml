@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "overlay",
-    "xtask"
+    "xtask",
+    "ipc-channel-wasm"
 ]

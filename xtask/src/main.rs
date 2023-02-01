@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::process::Command;
 use xtask_wasm::{anyhow::Result, clap, default_dist_dir};
 
@@ -8,17 +9,23 @@ enum Opt {
     Start(xtask_wasm::DevServer),
 }
 
-
 fn main() -> Result<()> {
     let opt: Opt = clap::Parser::parse();
+    if !Path::exists(
+        std::env::current_dir()
+            .unwrap()
+            .join("xtask/src/main.rs")
+            .as_path(),
+    ) {
+        panic!("Please move into the root directory of the project.")
+    }
 
     match opt {
         Opt::Dist(dist) => {
             log::info!("Generating package...");
 
-            dist
-                .dist_dir_path("dist")
-                .static_dir_path(std::env::current_dir().unwrap().join("static")) // cursed but ok
+            dist.dist_dir_path("overlay/dist")
+                .static_dir_path(std::env::current_dir().unwrap().join("overlay/static")) // cursed but ok
                 .app_name("overlay")
                 .run_in_workspace(true)
                 .run("overlay")?;
@@ -34,7 +41,9 @@ fn main() -> Result<()> {
         Opt::Start(mut dev_server) => {
             log::info!("Starting the development server...");
 
-            dev_server.arg("dist").start("dist")?;
+            dev_server
+                .arg("dist")
+                .start(std::env::current_dir().unwrap().join("overlay/dist"))?;
         }
     }
 
