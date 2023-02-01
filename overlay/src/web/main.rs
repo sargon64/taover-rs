@@ -15,7 +15,7 @@ impl Component for App {
         html! {
             <>
                 <p>{"uwu"}</p>
-                <Model />
+                <Model />// ws_uri={ctx.props().ws_uri.clone()}/>
             </>
         }
     }

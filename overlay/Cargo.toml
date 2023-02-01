@@ -8,11 +8,12 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-quick-protobuf = "0.8.1"
+# quick-protobuf = "0.8.1" jank.
 serde = { version = "1.0.152", features = ["derive"] }
 serde_json = "1.0.91"
 url = "2.3.1"
 wasm-bindgen = "0.2.83"
+wasm-timer = "0.2.5"
 # ws = "0.9.2" cant be used on wasm targets due to net2
 yew = "0.19.3"
 js-sys = "0.3.60"
@@ -21,6 +22,7 @@ lazy_static = "1.4.0"
 ipc-channel = { path = "../ipc-channel-wasm" }
 yew-websocket = "0.1.1"
 anyhow = "1.0.68"
+prost = "0.11.6"
 
 [dependencies.web-sys]
 version = "0.3.22"

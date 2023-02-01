@@ -1,21 +1,25 @@
-use std::sync::atomic::Ordering;
+use std::collections::VecDeque;
+use std::sync::atomic::Ordering::SeqCst;
+use std::sync::atomic::{AtomicU16, AtomicU32, AtomicU8, Ordering};
+use std::time::Duration;
 
+use anyhow::Error;
 use js_sys::Uint8Array;
 use lazy_static::lazy_static;
-use quick_protobuf::{BytesReader, MessageRead};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::*, JsCast};
 use web_sys::{console, FileReader, MessageEvent, ProgressEvent, WebSocket};
 use yew::{html, Callback, Component, Context, Html};
-
-use anyhow::Error;
-use ipc_channel::ipc;
 use yew_websocket::macros::Json;
 use yew_websocket::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
 
+use ipc_channel::ipc;
+use prost::Message;
+
 use crate::console_log;
 use crate::proto::packet::Packet;
-use crate::SENT_PACKET_COUNT;
+
+// use crate::SENT_PACKET_COUNT;
 
 // pub fn start_ta(ta_uri: &str) -> Result<(), JsValue> {
 //     let ws = WebSocket::new(ta_uri)?;
@@ -65,13 +69,15 @@ impl From<WsAction> for Msg {
     }
 }
 
-pub struct Model<'a> {
+pub struct Model {
     pub fetching: bool,
-    pub data: Option<Packet<'a>>,
+    pub data: Option<Packet>,
     pub ws: Option<WebSocketTask>,
 }
 
-impl Model<'_> {
+static FAILURE_RETRY_COUNT: AtomicU8 = AtomicU8::new(0);
+
+impl Model {
     fn view_data(&self) -> Html {
         if let Some(value) = &self.data {
             html! {
@@ -103,9 +109,25 @@ impl Component for Model {
                 WsAction::Connect => {
                     let callback = ctx.link().callback(|data| Msg::WsReady(data));
                     let notification = ctx.link().batch_callback(|status| match status {
-                        WebSocketStatus::Opened => None,
-                        WebSocketStatus::Closed | WebSocketStatus::Error => {
-                            Some(WsAction::Lost.into())
+                        WebSocketStatus::Opened => {
+                            FAILURE_RETRY_COUNT.store(0, SeqCst);
+                            None
+                        }
+                        WebSocketStatus::Closed => Some(WsAction::Lost.into()),
+                        WebSocketStatus::Error => {
+                            let mut res = WsAction::Connect.into();
+                            if FAILURE_RETRY_COUNT.load(SeqCst) > 3 {
+                                res = WsAction::Lost.into()
+                            }
+                            FAILURE_RETRY_COUNT.fetch_add(1, SeqCst);
+                            console_log!("Waiting 5 seconds before retry on websocket error.");
+                            let i = wasm_timer::Instant::now();
+                            loop {
+                                if wasm_timer::Instant::now().duration_since(i).as_secs() >= 5 {
+                                    break;
+                                }
+                            }
+                            Some(res)
                         }
                     });
                     let task = WebSocketService::connect_binary(
@@ -137,10 +159,11 @@ impl Component for Model {
             },
             Msg::WsReady(response) => {
                 //self.data = self.data.ok();
-                let arr = response.unwrap();
-                let mut reader = BytesReader::from_bytes(&arr);
-                let decoded = Packet::from_reader(&mut reader, &arr);
-                self.data = decoded.ok();
+                // let arr = response.unwrap();
+                // let mut reader = BytesReader::from_bytes(&arr);
+                // let decoded = Packet::from_reader(&mut reader, &arr);
+                let deq = VecDeque::from(response.unwrap());
+                self.data = Packet::decode(deq).ok();
                 true
             }
         }

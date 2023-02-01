@@ -7,6 +7,7 @@ enum Opt {
     Dist(xtask_wasm::Dist),
     Watch(xtask_wasm::Watch),
     Start(xtask_wasm::DevServer),
+    GenerateProtobuf(xtask_wasm::DevServer),
 }
 
 fn main() -> Result<()> {
@@ -45,6 +46,27 @@ fn main() -> Result<()> {
                 .arg("dist")
                 .start(std::env::current_dir().unwrap().join("overlay/dist"))?;
         }
+        Opt::GenerateProtobuf(..) => prost_build::compile_protos(
+            &[
+                std::env::current_dir()
+                    .unwrap()
+                    .join("overlay/src/proto/discord.proto")
+                    .as_path(),
+                std::env::current_dir()
+                    .unwrap()
+                    .join("overlay/src/proto/models.proto")
+                    .as_path(),
+                std::env::current_dir()
+                    .unwrap()
+                    .join("overlay/src/proto/packets.proto")
+                    .as_path(),
+            ],
+            &[std::env::current_dir()
+                .unwrap()
+                .join("overlay/src/proto/")
+                .as_path()],
+        )
+        .unwrap(),
     }
 
     Ok(())
