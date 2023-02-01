@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 log = "0.4.17"
 xtask-wasm = "0.1.10"
+prost-build = "0.11.6"
