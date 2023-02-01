@@ -1,3 +1,0 @@
-[submodule "ipc-channel-wasm"]
-	path = ipc-channel-wasm
-	url = https://github.com/sargon64/ipc-channel-wasm
