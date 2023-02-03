@@ -5,6 +5,7 @@ use std::sync::atomic::AtomicU32;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread;
+use std::time::Duration;
 
 use lazy_static::lazy_static;
 use wasm_bindgen::prelude::*;
@@ -12,7 +13,6 @@ use yew::prelude::*;
 use yew::props;
 use yew_router::prelude::*;
 
-use ipc_channel::ipc;
 use proto::packet::Packet;
 //use ta::start_ta;
 
@@ -74,6 +74,15 @@ macro_rules! console_log {
 //         0.into()
 //     };
 // }
+
+pub fn delay(dur: Duration) {
+    let i = wasm_timer::Instant::now();
+    loop {
+        if wasm_timer::Instant::now().duration_since(i).as_secs() >= dur.as_secs() {
+            break;
+        }
+    }
+}
 
 #[wasm_bindgen(start)]
 pub fn run() {

@@ -4,6 +4,7 @@ use std::sync::atomic::{AtomicU16, AtomicU32, AtomicU8, Ordering};
 use std::time::Duration;
 
 use anyhow::Error;
+use gloo::timers::callback::Timeout;
 use js_sys::Uint8Array;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
@@ -13,7 +14,6 @@ use yew::{html, Callback, Component, Context, Html};
 use yew_websocket::macros::Json;
 use yew_websocket::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
 
-use ipc_channel::ipc;
 use prost::Message;
 
 use crate::console_log;
@@ -69,7 +69,7 @@ impl From<WsAction> for Msg {
     }
 }
 
-pub struct Model {
+pub struct Socket {
     pub fetching: bool,
     pub data: Option<Packet>,
     pub ws: Option<WebSocketTask>,
@@ -77,7 +77,7 @@ pub struct Model {
 
 static FAILURE_RETRY_COUNT: AtomicU8 = AtomicU8::new(0);
 
-impl Model {
+impl Socket {
     fn view_data(&self) -> Html {
         if let Some(value) = &self.data {
             html! {
@@ -91,7 +91,7 @@ impl Model {
     }
 }
 
-impl Component for Model {
+impl Component for Socket {
     type Message = Msg;
     type Properties = ();
 
@@ -115,19 +115,13 @@ impl Component for Model {
                         }
                         WebSocketStatus::Closed => Some(WsAction::Lost.into()),
                         WebSocketStatus::Error => {
-                            let mut res = WsAction::Connect.into();
-                            if FAILURE_RETRY_COUNT.load(SeqCst) > 3 {
-                                res = WsAction::Lost.into()
+                            let mut res = WsAction::Lost;
+                            if FAILURE_RETRY_COUNT.load(SeqCst) <= 5 {
+                                res = WsAction::Connect;
                             }
                             FAILURE_RETRY_COUNT.fetch_add(1, SeqCst);
                             console_log!("Waiting 5 seconds before retry on websocket error.");
-                            let i = wasm_timer::Instant::now();
-                            loop {
-                                if wasm_timer::Instant::now().duration_since(i).as_secs() >= 5 {
-                                    break;
-                                }
-                            }
-                            Some(res)
+                            Some(res.into())
                         }
                     });
                     let task = WebSocketService::connect_binary(

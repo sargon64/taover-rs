@@ -2,5 +2,4 @@
 members = [
     "overlay",
     "xtask",
-    "ipc-channel-wasm"
 ]

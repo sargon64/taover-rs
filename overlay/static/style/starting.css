@@ -1,0 +1,24 @@
+.background {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+}
+
+.blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    background-color: #121f2588;
+    z-index: -1;
+    backdrop-filter: blur(8px);
+}
+
+.play {
+    display: block;
+}
